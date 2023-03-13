@@ -27,3 +27,21 @@ Tentatively, we have chosen to represent these relations:
 ### Step 3) Getting familiar with the frameworks we will be using (PHP/Oracle Database) [March 17-20]
 
 ### Step 4) Designing a prototype for GUI [March 18-19]
+
+### Step 5) Begin with backend development [March 20-25]
+* Storing the data in the back-end
+* Writing the PHP code to control the functions of the application
+* Testing the code and ensuring compatibility between our parts
+* Ensuring integrity constraints
+
+### Step 6) Front-end [March 26-April 1]
+* Creating basic structure of the front-end
+  * Creating a table and a button 
+  * Creating text boxes
+  * Determine how to place data inside a table
+* Styling the structure
+* Triggering the data to refresh once the button is clicked
+* Creating a save option for user to store their data in the backend
+
+
+
