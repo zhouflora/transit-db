@@ -43,5 +43,12 @@ Tentatively, we have chosen to represent these relations:
 * Triggering the data to refresh once the button is clicked
 * Creating a save option for user to store their data in the backend
 
+### Step 7) Discuss and resolve merge conflicts [April 2-4]
+* Implement, test, debug our own and each other’s code
+* Integrate front-end and back-end
+
+### Step 8) Run through demo as a group [April 4]
+* Ensure implementation is functioning properly
+* Make any last minute stylistic edits
 
 
