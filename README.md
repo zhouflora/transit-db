@@ -6,6 +6,8 @@ Our database project models a public transit system and tries to capture necessa
 
 ### Task Breakdown
 * The front-end and back-end will be evenly distributed amongst all three of our group members to ensure we each get exposure to the different types of development and maximize our learning opportunities. 
+* Each member will be responsible for completing steps 2-6 for their assigned relations.
+* Steps 7-8 will be completed as a group.
 
 ## Timeline
 ### Step 1) Decide on which portion of the project to implement
