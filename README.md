@@ -51,4 +51,6 @@ Tentatively, we have chosen to represent these relations:
 * Ensure implementation is functioning properly
 * Make any last minute stylistic edits
 
-
+## Description of challenges
+* Since we will be working on each step together, there will be a higher chance of merge conflicts. We need to have good communication and be confident in resolving conflicts on GitHub.
+* To get familiar with the frameworks and process of implementing the front- and back-end, we will refer to the PHP and Oracle official documentation, YouTube tutorials, office hours, and reach out to our TA if we get stuck at any part.
