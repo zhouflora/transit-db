@@ -1,6 +1,5 @@
 -------- Drop any remaining tables --------
 
-
 DROP TABLE Station_Has_Amenities;
 DROP TABLE StationLine_Scheduled_For_Timing;
 DROP TABLE Timing;
@@ -346,15 +345,15 @@ INSERT INTO Timing VALUES (TO_TIMESTAMP('12:12:00', 'HH24:MI:SS'));
 INSERT INTO Timing VALUES (TO_TIMESTAMP('12:45:00', 'HH24:MI:SS'));
 
 INSERT INTO Station_Has_Amenities
-VALUES ('Starbucks', 456, 1, 'Coffeeshop', 2000.00, '2010-03-15');
+VALUES ('Starbucks', 456, 1, 'Coffeeshop', 2000.00, TO_DATE('2010-03-15', 'YYYY-MM-DD'));
 INSERT INTO Station_Has_Amenities
-VALUES ('Subway', 456, 1, 'Fast Food', 2200.00, '2009-10-01');
+VALUES ('Subway', 456, 1, 'Fast Food', 2200.00, TO_DATE('2009-10-01', 'YYYY-MM-DD'));
 INSERT INTO Station_Has_Amenities
-VALUES ('Ticket Booth', 456, 2, 'Purchase transit tickets', 0.00, '2006-01-01');
+VALUES ('Ticket Booth', 456, 2, 'Purchase transit tickets', 0.00, TO_DATE('2006-01-01', 'YYYY-MM-DD'));
 INSERT INTO Station_Has_Amenities
-VALUES ('Vending Machine', 105, 4, 'Fast Food', 2200.00, '2009-10-01');
+VALUES ('Vending Machine', 105, 4, 'Fast Food', 2200.00, TO_DATE('2009-10-01', 'YYYY-MM-DD'));
 INSERT INTO Station_Has_Amenities
-VALUES ('Ticket Booth', 105, 2, 'Purchase transit tickets', 0.00, '2002-01-01');
+VALUES ('Ticket Booth', 105, 2, 'Purchase transit tickets', 0.00, TO_DATE('2002-01-01', 'YYYY-MM-DD'));
 
 INSERT INTO Line_Has_Station VALUES (456, 'CanadaLine', 'N', 10);
 INSERT INTO Line_Has_Station VALUES (240, 'MillenniumLine', 'E', 4);
@@ -499,28 +498,33 @@ INSERT INTO Card VALUES ('10C154982E', 0.75);
 INSERT INTO Card VALUES ('31333C2090', 20.00);
 INSERT INTO Card VALUES ('519552E6F3', 13.60);
 
-INSERT INTO Card_Used_At_Station VALUES ('AF7905D714', 123, '2022-10-22 07:00:00', 0);
-INSERT INTO Card_Used_At_Station VALUES ('AF7905D714', 456, '2022-10-22 07:20:00', 1);
-INSERT INTO Card_Used_At_Station VALUES ('31333C2090', 789, '2019-10-10 23:10:00', 0);
-INSERT INTO Card_Used_At_Station VALUES ('10C154982E', 140, '2022-10-23 07:10:00', 0);
-INSERT INTO Card_Used_At_Station VALUES ('AF7905D714', 123, '2021-08-01 23:10:00', 0);
+INSERT INTO Card_Used_At_Station
+VALUES ('AF7905D714', 123, TO_TIMESTAMP('2022-10-22 07:00:00', 'YYYY-MM-DD HH24:MI:SS'), 0);
+INSERT INTO Card_Used_At_Station
+VALUES ('AF7905D714', 456, TO_TIMESTAMP('2022-10-22 07:20:00', 'YYYY-MM-DD HH24:MI:SS'), 1);
+INSERT INTO Card_Used_At_Station
+VALUES ('31333C2090', 789, TO_TIMESTAMP('2019-10-10 23:10:00', 'YYYY-MM-DD HH24:MI:SS'), 0);
+INSERT INTO Card_Used_At_Station
+VALUES ('10C154982E', 140, TO_TIMESTAMP('2022-10-23 07:10:00', 'YYYY-MM-DD HH24:MI:SS'), 0);
+INSERT INTO Card_Used_At_Station
+VALUES ('AF7905D714', 123, TO_TIMESTAMP('2021-08-01 23:10:00', 'YYYY-MM-DD HH24:MI:SS'), 0);
 
-INSERT INTO Card_Links_To VALUES ('AF7905D714', 'raymondng', '2017-04-19');
-INSERT INTO Card_Links_To VALUES ('2C0EFC1076', 'ansonchung', '2018-02-19');
-INSERT INTO Card_Links_To VALUES ('10C154982E', 'jsand01', '2019-02-19');
-INSERT INTO Card_Links_To VALUES ('31333C2090', 'flozhou', '2020-01-22');
-INSERT INTO Card_Links_To VALUES ('519552E6F3', 'payamfz', '2022-05-20');
+INSERT INTO Card_Links_To VALUES ('AF7905D714', 'raymondng', TO_DATE('2017-04-19', 'YYYY-MM-DD'));
+INSERT INTO Card_Links_To VALUES ('2C0EFC1076', 'ansonchung', TO_DATE('2018-02-19', 'YYYY-MM-DD'));
+INSERT INTO Card_Links_To VALUES ('10C154982E', 'jsand01', TO_DATE('2019-02-19', 'YYYY-MM-DD'));
+INSERT INTO Card_Links_To VALUES ('31333C2090', 'flozhou', TO_DATE('2020-01-22', 'YYYY-MM-DD'));
+INSERT INTO Card_Links_To VALUES ('519552E6F3', 'payamfz', TO_DATE('2022-05-20', 'YYYY-MM-DD'));
 
 INSERT INTO Pass_Loads_To
-VALUES ('M', '6HA86HBNCJ', '2023-03-01', '2023-04-01', 'AF7905D714');
+VALUES ('M', '6HA86HBNCJ', TO_DATE('2023-03-01', 'YYYY-MM-DD'), TO_DATE('2023-04-01', 'YYYY-MM-DD'), 'AF7905D714');
 INSERT INTO Pass_Loads_To
-VALUES ('D', 'AFC052E87F', '2023-03-01', '2023-03-02', '2C0EFC1076');
+VALUES ('D', 'AFC052E87F', TO_DATE('2023-03-01', 'YYYY-MM-DD'), TO_DATE('2023-03-02', 'YYYY-MM-DD'), '2C0EFC1076');
 INSERT INTO Pass_Loads_To
-VALUES ('M', '7CEE183B35', '2023-03-01', '2023-04-01', '10C154982E');
+VALUES ('M', '7CEE183B35', TO_DATE('2023-03-01', 'YYYY-MM-DD'), TO_DATE('2023-04-01', 'YYYY-MM-DD'), '10C154982E');
 INSERT INTO Pass_Loads_To
-VALUES ('M', 'A6FA8EEFE2', '2023-03-01', '2023-04-01', '31333C2090');
+VALUES ('M', 'A6FA8EEFE2', TO_DATE('2023-03-01', 'YYYY-MM-DD'), TO_DATE('2023-04-01', 'YYYY-MM-DD'), '31333C2090');
 INSERT INTO Pass_Loads_To
-VALUES ('M', '24AD7F80B6', '2023-03-01', '2023-04-01', '519552E6F3');
+VALUES ('M', '24AD7F80B6', TO_DATE('2023-03-01', 'YYYY-MM-DD'), TO_DATE('2023-04-01', 'YYYY-MM-DD'), '519552E6F3');
 
 INSERT INTO Vehicle_Capacity VALUES ('Articulated', 2017, 75);
 INSERT INTO Vehicle_Capacity VALUES ('Minibus', 2015, 30);
@@ -534,21 +538,21 @@ INSERT INTO Vehicle_Capacity VALUES ('Kahloke', 1973, 200);
 INSERT INTO Vehicle_Capacity VALUES ('Coastal Celebration', 2008, 300);
 INSERT INTO Vehicle_Capacity VALUES ('Baynes Sound Connector', 2015, 220);
 
-INSERT INTO Vehicle VALUES ('2c994m', 'Minibus', 2015, '2011-06-07');
-INSERT INTO Vehicle VALUES ('adef70', 'Diesel-Electric', 2015, '2020-09-04');
-INSERT INTO Vehicle VALUES ('f0b2a1', 'Articulated', 2017, '2016-01-21');
-INSERT INTO Vehicle VALUES ('6d1d10', 'Diesel-Electric', 2015, '2020-09-04');
-INSERT INTO Vehicle VALUES ('c47259', 'Battery-Electric', 2020, '2022-04-17');
-INSERT INTO Vehicle VALUES ('daaa1f', 'Hyundai Rotem', 2011, '2021-07-19');
-INSERT INTO Vehicle VALUES ('e886a6', 'West Coast Express', 1995, '2021-12-15');
-INSERT INTO Vehicle VALUES ('a60cf4', 'Bombardier Innovia Metro 300', 2016, '2020-02-25');
-INSERT INTO Vehicle VALUES ('236572', 'Bombardier Innovia Metro 300', 2016, '2016-03-17');
-INSERT INTO Vehicle VALUES ('fa1534', 'West Coast Express', 1995, '2022-06-29');
-INSERT INTO Vehicle VALUES ('be2626', 'Kahloke', 1973, '2016-08-17');
-INSERT INTO Vehicle VALUES ('9a8a61', 'Malaspina Sky', 2008, '2019-12-09');
-INSERT INTO Vehicle VALUES ('efa24a', 'Coastal Celebration', 2008, '2020-09-10');
-INSERT INTO Vehicle VALUES ('c6f3f0', 'Coastal Celebration', 2008, '2021-09-22');
-INSERT INTO Vehicle VALUES ('563cc2', 'Baynes Sound Connector', 2015, '2022-01-12');
+INSERT INTO Vehicle VALUES ('2c994m', 'Minibus', 2015, TO_DATE('2011-06-07', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('adef70', 'Diesel-Electric', 2015, TO_DATE('2020-09-04', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('f0b2a1', 'Articulated', 2017, TO_DATE('2016-01-21', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('6d1d10', 'Diesel-Electric', 2015, TO_DATE('2020-09-04', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('c47259', 'Battery-Electric', 2020, TO_DATE('2022-04-17', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('daaa1f', 'Hyundai Rotem', 2011, TO_DATE('2021-07-19', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('e886a6', 'West Coast Express', 1995, TO_DATE('2021-12-15', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('a60cf4', 'Bombardier Innovia Metro 300', 2016, TO_DATE('2020-02-25', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('236572', 'Bombardier Innovia Metro 300', 2016, TO_DATE('2016-03-17', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('fa1534', 'West Coast Express', 1995, TO_DATE('2022-06-29', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('be2626', 'Kahloke', 1973, TO_DATE('2016-08-17', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('9a8a61', 'Malaspina Sky', 2008, TO_DATE('2019-12-09', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('efa24a', 'Coastal Celebration', 2008, TO_DATE('2020-09-10', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('c6f3f0', 'Coastal Celebration', 2008, TO_DATE('2021-09-22', 'YYYY-MM-DD'));
+INSERT INTO Vehicle VALUES ('563cc2', 'Baynes Sound Connector', 2015, TO_DATE('2022-01-12', 'YYYY-MM-DD'));
 
 INSERT INTO Bus VALUES ('2c994m');
 INSERT INTO Bus VALUES ('adef70');
@@ -568,11 +572,16 @@ INSERT INTO Ferry VALUES ('efa24a');
 INSERT INTO Ferry VALUES ('c6f3f0');
 INSERT INTO Ferry VALUES ('563cc2');
 
-INSERT INTO Operates_In VALUES ('2c994m', 'Bus14', '2019-07-31', '2022-06-27');
-INSERT INTO Operates_In VALUES ('e886a6', 'CanadaLine', '2021-01-21', null);
-INSERT INTO Operates_In VALUES ('f0b2a1', 'Bus44', '2022-05-10', null);
-INSERT INTO Operates_In VALUES ('a60cf4', 'MillenniumLine', '2020-05-28', '2022-07-28');
-INSERT INTO Operates_In VALUES ('9a8a61', 'SeaBus', '2021-07-20', '2022-02-15');
+INSERT INTO Operates_In
+VALUES ('2c994m', 'Bus14', TO_DATE('2019-07-31', 'YYYY-MM-DD'), TO_DATE('2022-06-27', 'YYYY-MM-DD'));
+INSERT INTO Operates_In
+VALUES ('e886a6', 'CanadaLine', TO_DATE('2021-01-21', 'YYYY-MM-DD'), null);
+INSERT INTO Operates_In
+VALUES ('f0b2a1', 'Bus44', TO_DATE('2022-05-10', 'YYYY-MM-DD'), null);
+INSERT INTO Operates_In
+VALUES ('a60cf4', 'MillenniumLine', TO_DATE('2020-05-28', 'YYYY-MM-DD'), TO_DATE('2022-07-28', 'YYYY-MM-DD'));
+INSERT INTO Operates_In
+VALUES ('9a8a61', 'SeaBus', TO_DATE('2021-07-20', 'YYYY-MM-DD'), TO_DATE('2022-02-15', 'YYYY-MM-DD'));
 
 INSERT INTO Service_Cost VALUES (1001, 'Oil Change', 250);
 INSERT INTO Service_Cost VALUES (1007, 'Brake Check', 200);
@@ -580,19 +589,24 @@ INSERT INTO Service_Cost VALUES (2004, 'Battery Replacement', 300);
 INSERT INTO Service_Cost VALUES (1024, 'Air Filter Replacement', 100);
 INSERT INTO Service_Cost VALUES (1000, 'Exterior Cleaning', 60);
 
-INSERT INTO Services VALUES ('TE2957869336', '2c994m', 1001, '2019-02-05');
-INSERT INTO Services VALUES ('TE2957869336', '2c994m', 1007, '2023-01-28');
-INSERT INTO Services VALUES ('TE7653204981', 'f0b2a1', 2004, '2011-06-07');
-INSERT INTO Services VALUES ('TE7653204981', 'f0b2a1', 1024, '2011-06-07');
-INSERT INTO Services VALUES('TE8675012943', '2c994m', 1000, '2010-10-28');
+INSERT INTO Services VALUES ('TE2957869336', '2c994m', 1001, TO_DATE('2019-02-05', 'YYYY-MM-DD'));
+INSERT INTO Services VALUES ('TE2957869336', '2c994m', 1007, TO_DATE('2023-01-28', 'YYYY-MM-DD'));
+INSERT INTO Services VALUES ('TE7653204981', 'f0b2a1', 2004, TO_DATE('2011-06-07', 'YYYY-MM-DD'));
+INSERT INTO Services VALUES ('TE7653204981', 'f0b2a1', 1024, TO_DATE('2011-06-07', 'YYYY-MM-DD'));
+INSERT INTO Services VALUES('TE8675012943', '2c994m', 1000, TO_DATE('2010-10-28', 'YYYY-MM-DD'));
 
 INSERT INTO Drives
-VALUES ('DR5810205722', '2c994m', 'Bus14', 'UBC Exchange', 'Northbound Homer St', '2020-02-23', '2022-06-27');
+VALUES ('DR5810205722', '2c994m', 'Bus14', 'UBC Exchange', 'Northbound Homer St',
+        TO_DATE('2020-02-23', 'YYYY-MM-DD'), TO_DATE('2022-06-27', 'YYYY-MM-DD'));
 INSERT INTO Drives
-VALUES ('DR5303928084', '2c994m', 'Bus14', 'Northbound Homer St', 'UBC Exchange', '2022-05-10', '2022-08-18');
+VALUES ('DR5303928084', '2c994m', 'Bus14', 'Northbound Homer St', 'UBC Exchange',
+        TO_DATE('2022-05-10', 'YYYY-MM-DD'), TO_DATE('2022-08-18', 'YYYY-MM-DD'));
 INSERT INTO Drives
-VALUES ('DR7529032867', 'f0b2a1', 'Bus44', 'Metrotown', 'UBC Exchange', '2021-03-12', '2023-01-28');
+VALUES ('DR7529032867', 'f0b2a1', 'Bus44', 'Metrotown', 'UBC Exchange',
+        TO_DATE('2021-03-12', 'YYYY-MM-DD'), TO_DATE('2023-01-28', 'YYYY-MM-DD'));
 INSERT INTO Drives
-VALUES ('DR3850072567', 'a60cf4', 'MillenniumLine', 'VCC–Clark Station', 'Lafarge Lake–Douglas Station', '2020-05-28', '2022-02-09');
+VALUES ('DR3850072567', 'a60cf4', 'MillenniumLine', 'VCC–Clark Station', 'Lafarge Lake–Douglas Station',
+        TO_DATE('2020-05-28', 'YYYY-MM-DD'), TO_DATE('2022-02-09', 'YYYY-MM-DD'));
 INSERT INTO Drives
-VALUES ('DR0080015868', 'f0b2a1', 'Bus44', 'Joyce Station', 'UBC Exchange', '2021-12-02', '2022-02-15');
+VALUES ('DR0080015868', 'f0b2a1', 'Bus44', 'Joyce Station', 'UBC Exchange',
+        TO_DATE('2021-12-02', 'YYYY-MM-DD'), TO_DATE('2022-02-15', 'YYYY-MM-DD'));
