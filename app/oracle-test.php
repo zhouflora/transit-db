@@ -63,6 +63,28 @@
             <input type="submit" name="countTuples"></p>
         </form>
 
+        <hr />
+
+        <h2>See Table Names</h2>
+        <form method="GET" action="oracle-test.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="projectionQueryRequest" name="projectionQueryRequest">
+            <input type="submit" value="See Table Names" name="viewTableNames"></p>
+        </form>
+
+        <h3>Choose Table To View</h3>
+        <form method="GET" action="oracle-test.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="tableSchemaRequest" name="tableSchemaRequest">
+
+            Please type the name [in capitals] of any one table to view its schema details: 
+            <input type="text" name="tabName"> <br /><br />
+
+            <input type="submit" value="Confirm" name="viewTableSchema"></p>
+        </form>
+
+        <hr />
+
+<hr />
+
         <?php
 		//this tells the system that it's no longer just parsing html; it's now parsing PHP
 
@@ -224,6 +246,31 @@
             }
         }
 
+        function handleProjectTableNamesRequest() {
+            global $db_conn;
+            $count = 1;
+
+            $result = executePlainSQL("SELECT table_name FROM user_tables");
+
+            echo "Names of tables in this database: " ."<br>";
+            while ($row = oci_fetch_array($result, OCI_BOTH)) {
+                echo "<br>" . $count . ": " . $row[0] . "<br>";
+                $count++; 
+            }
+        }
+
+        function handleTableSchemaRequest() {
+            global $db_conn;
+            $tabName = $_GET['tabName'];
+            
+            $result = executePlainSQL("SELECT column_name from ALL_TAB_COLUMNS WHERE table_name='$tabName'");
+
+            echo "The data from this table includes: " . "<br>";
+            while ($row = oci_fetch_array($result, OCI_BOTH)) {
+                echo "<br>" . $row[0] . "<br>";
+            }
+        }
+
         // HANDLE ALL POST ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
         function handlePOSTRequest() {
@@ -246,6 +293,10 @@
             if (connectToDB()) {
                 if (array_key_exists('countTuples', $_GET)) {
                     handleCountRequest();
+                } else if (array_key_exists('viewTableNames', $_GET)) {
+                    handleProjectTableNamesRequest();
+                } else if (array_key_exists('viewTableSchema', $_GET)) {
+                    handleTableSchemaRequest();
                 }
 
                 disconnectFromDB();
@@ -254,7 +305,7 @@
 
 		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit'])) {
             handlePOSTRequest();
-        } else if (isset($_GET['countTupleRequest'])) {
+        } else if (isset($_GET['countTupleRequest']) || isset($_GET['projectionQueryRequest']) || isset($_GET['tableSchemaRequest'])) {
             handleGETRequest();
         }
 		?>
