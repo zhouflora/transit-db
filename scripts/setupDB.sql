@@ -336,6 +336,8 @@ INSERT INTO Line VALUES ('SeaBus', 50.00, '4A433D', 2100.00);
 INSERT INTO Line VALUES ('CanadaLine', 120.50, '0099E0', 1000.00);
 INSERT INTO Line VALUES ('Bus14', 30.00, '0335FC', 100.00);
 INSERT INTO Line VALUES ('MillenniumLine', 120.00, 'FFDD00', 1000.00);
+INSERT INTO Line VALUES ('Bus4', 30.00, '0335FC', 100.00);
+INSERT INTO Line VALUES ('ExpoLine', 120.00, 'FFDD00', 1000.00);
 
 INSERT INTO Timing VALUES (TO_TIMESTAMP('07:00:00', 'HH24:MI:SS'));
 INSERT INTO Timing VALUES (TO_TIMESTAMP('07:10:00', 'HH24:MI:SS'));
@@ -356,8 +358,10 @@ INSERT INTO Station_Has_Amenities
 VALUES ('Ticket Booth', 105, 2, 'Purchase transit tickets', 0.00, TO_DATE('2002-01-01', 'YYYY-MM-DD'));
 
 INSERT INTO Line_Has_Station VALUES (456, 'CanadaLine', 'N', 10);
+INSERT INTO Line_Has_Station VALUES (456, 'ExpoLine', 'N', 8);
 INSERT INTO Line_Has_Station VALUES (240, 'MillenniumLine', 'E', 4);
 INSERT INTO Line_Has_Station VALUES (123, 'Bus14', 'E', 3);
+INSERT INTO Line_Has_Station VALUES (123, 'Bus4', 'W', 19);
 INSERT INTO Line_Has_Station VALUES (456, 'SeaBus', 'N', 1);
 INSERT INTO Line_Has_Station VALUES (140, 'Bus14', 'E', 48);
 

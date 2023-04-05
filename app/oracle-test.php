@@ -105,7 +105,7 @@
             <option value="CARD">CARD</option>;
             <option value="PASS">PASS</option>;
             <!-- <option selected="selected">Select...</option>
-                <?php            
+                <?php
                 // $canChange = array("USERACCOUNT", "CARD", "PASS");
                 // foreach($canChange as $tableName) {
                 //     echo "<option value=($tableName)>$tableName</option>";
@@ -133,265 +133,288 @@
 
     <hr />
 
+    <h2>Aggregation: Having Query</h2>
+    <form method="POST" action="oracle-test.php">
+        <!--refresh page when submitted-->
+        <input type="hidden" id="havingRequest" name="havingRequest">
+        For each station, find the total amount of transit lines that pass through them, only for stations
+        that are passed through more than one line <br /><br />
+        <input type="submit" value="Get Results" name="havingSubmit"></p>
+    </form>
+
     <?php
-		//this tells the system that it's no longer just parsing html; it's now parsing PHP
+    //this tells the system that it's no longer just parsing html; it's now parsing PHP
+    
+    $success = True; //keep track of errors so it redirects the page only if there are no errors
+    $db_conn = NULL; // edit the login credentials in connectToDB()
+    $show_debug_alert_messages = False; // set to True if you want alerts to show you which methods are being triggered (see how it is used in debugAlertMessage())
+    
+    function debugAlertMessage($message)
+    {
+        global $show_debug_alert_messages;
 
-        $success = True; //keep track of errors so it redirects the page only if there are no errors
-        $db_conn = NULL; // edit the login credentials in connectToDB()
-        $show_debug_alert_messages = False; // set to True if you want alerts to show you which methods are being triggered (see how it is used in debugAlertMessage())
+        if ($show_debug_alert_messages) {
+            echo "<script type='text/javascript'>alert('" . $message . "');</script>";
+        }
+    }
 
-        function debugAlertMessage($message) {
-            global $show_debug_alert_messages;
+    function executePlainSQL($cmdstr)
+    { //takes a plain (no bound variables) SQL command and executes it
+        //echo "<br>running ".$cmdstr."<br>";
+        global $db_conn, $success;
 
-            if ($show_debug_alert_messages) {
-                echo "<script type='text/javascript'>alert('" . $message . "');</script>";
-            }
+        $statement = OCIParse($db_conn, $cmdstr);
+        //There are a set of comments at the end of the file that describe some of the OCI specific functions and how they work
+    
+        if (!$statement) {
+            echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
+            $e = OCI_Error($db_conn); // For OCIParse errors pass the connection handle
+            echo htmlentities($e['message']);
+            $success = False;
         }
 
-        function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL command and executes it
-            //echo "<br>running ".$cmdstr."<br>";
-            global $db_conn, $success;
+        $r = OCIExecute($statement, OCI_DEFAULT);
+        if (!$r) {
+            echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
+            $e = oci_error($statement); // For OCIExecute errors pass the statementhandle
+            echo htmlentities($e['message']);
+            $success = False;
+        }
 
-            $statement = OCIParse($db_conn, $cmdstr);
-            //There are a set of comments at the end of the file that describe some of the OCI specific functions and how they work
+        return $statement;
+    }
 
-            if (!$statement) {
-                echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
-                $e = OCI_Error($db_conn); // For OCIParse errors pass the connection handle
-                echo htmlentities($e['message']);
-                $success = False;
+    function executeBoundSQL($cmdstr, $list)
+    {
+        /* Sometimes the same statement will be executed several times with different values for the variables involved in the query.
+        In this case you don't need to create the statement several times. Bound variables cause a statement to only be
+        parsed once and you can reuse the statement. This is also very useful in protecting against SQL injection.
+        See the sample code below for how this function is used */
+
+        global $db_conn, $success;
+        $statement = OCIParse($db_conn, $cmdstr);
+
+        if (!$statement) {
+            echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
+            $e = OCI_Error($db_conn);
+            echo htmlentities($e['message']);
+            $success = False;
+        }
+
+        foreach ($list as $tuple) {
+            foreach ($tuple as $bind => $val) {
+                //echo $val;
+                //echo "<br>".$bind."<br>";
+                OCIBindByName($statement, $bind, $val);
+                unset($val); //make sure you do not remove this. Otherwise $val will remain in an array object wrapper which will not be recognized by Oracle as a proper datatype
             }
 
             $r = OCIExecute($statement, OCI_DEFAULT);
             if (!$r) {
                 echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
-                $e = oci_error($statement); // For OCIExecute errors pass the statementhandle
+                $e = OCI_Error($statement); // For OCIExecute errors, pass the statementhandle
                 echo htmlentities($e['message']);
+                echo "<br>";
                 $success = False;
             }
+        }
+    }
 
-			return $statement;
-		}
+    function printResult($result)
+    { //prints results from a select statement
+        echo "<br>Retrieved data from table demoTable:<br>";
+        echo "<table>";
+        echo "<tr><th>ID</th><th>Name</th></tr>";
 
-        function executeBoundSQL($cmdstr, $list) {
-            /* Sometimes the same statement will be executed several times with different values for the variables involved in the query.
-		In this case you don't need to create the statement several times. Bound variables cause a statement to only be
-		parsed once and you can reuse the statement. This is also very useful in protecting against SQL injection.
-		See the sample code below for how this function is used */
-
-			global $db_conn, $success;
-			$statement = OCIParse($db_conn, $cmdstr);
-
-            if (!$statement) {
-                echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
-                $e = OCI_Error($db_conn);
-                echo htmlentities($e['message']);
-                $success = False;
-            }
-
-            foreach ($list as $tuple) {
-                foreach ($tuple as $bind => $val) {
-                    //echo $val;
-                    //echo "<br>".$bind."<br>";
-                    OCIBindByName($statement, $bind, $val);
-                    unset ($val); //make sure you do not remove this. Otherwise $val will remain in an array object wrapper which will not be recognized by Oracle as a proper datatype
-				}
-
-                $r = OCIExecute($statement, OCI_DEFAULT);
-                if (!$r) {
-                    echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
-                    $e = OCI_Error($statement); // For OCIExecute errors, pass the statementhandle
-                    echo htmlentities($e['message']);
-                    echo "<br>";
-                    $success = False;
-                }
-            }
+        while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+            echo "<tr><td>" . $row["ID"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
         }
 
-        function printResult($result) { //prints results from a select statement
-            echo "<br>Retrieved data from table demoTable:<br>";
-            echo "<table>";
-            echo "<tr><th>ID</th><th>Name</th></tr>";
+        echo "</table>";
+    }
 
-            while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-                echo "<tr><td>" . $row["ID"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
-            }
+    function connectToDB()
+    {
+        global $db_conn;
 
-            echo "</table>";
+        // Your username is ora_(CWL_ID) and the password is a(student number). For example,
+        // ora_platypus is the username and a12345678 is the password.
+        $db_conn = OCILogon("ora_payamfz", "a51597292", "dbhost.students.cs.ubc.ca:1522/stu");
+
+        if ($db_conn) {
+            debugAlertMessage("Database is Connected");
+            return true;
+        } else {
+            debugAlertMessage("Cannot connect to Database");
+            $e = OCI_Error(); // For OCILogon errors pass no handle
+            echo htmlentities($e['message']);
+            return false;
         }
+    }
 
-        function connectToDB() {
-            global $db_conn;
+    function disconnectFromDB()
+    {
+        global $db_conn;
 
-            // Your username is ora_(CWL_ID) and the password is a(student number). For example,
-			// ora_platypus is the username and a12345678 is the password.
-            $db_conn = OCILogon("ora_payamfz", "a51597292", "dbhost.students.cs.ubc.ca:1522/stu");
+        debugAlertMessage("Disconnect from Database");
+        OCILogoff($db_conn);
+    }
 
-            if ($db_conn) {
-                debugAlertMessage("Database is Connected");
-                return true;
-            } else {
-                debugAlertMessage("Cannot connect to Database");
-                $e = OCI_Error(); // For OCILogon errors pass no handle
-                echo htmlentities($e['message']);
-                return false;
-            }
+    function handleUpdateRequest()
+    {
+        global $db_conn;
+
+        $name = $_POST['userName'];
+        $old_pass = $_POST['oldPass'];
+        $new_pass = $_POST['newPass'];
+
+        // you need the wrap the old name and new name values with single quotations
+        executePlainSQL("UPDATE UserAccount SET password='" . $new_pass . "' WHERE password='" . $old_pass . "' AND username='" . $name . "'");
+        OCICommit($db_conn);
+    }
+
+    function handleResetRequest()
+    {
+        global $db_conn;
+        // Drop old table
+        executePlainSQL("DROP TABLE demoTable");
+
+        // Create new table
+        echo "<br> creating new table <br>";
+        executePlainSQL("CREATE TABLE demoTable (id int PRIMARY KEY, name char(30))");
+        OCICommit($db_conn);
+    }
+
+    // function random_int($n) {
+    //     $min = pow(10, $n - 1);
+    //     $max = pow(10, $n) - 1;
+    //     return mt_rand($min, $max);
+    // };
+    
+    function handleInsertRequest()
+    {
+        global $db_conn;
+
+        $userAccountInfo = array(
+            ":bind1" => $_POST['username'],
+            ":bind2" => $_POST['password']
+        );
+
+        $userAccountRegister = array(
+            ":bind1" => $_POST['username'],
+            ":bind3" => 'A8H6G2H837',
+            ":bind5" => 1234567890 // need to generate
+        );
+
+        $alltuples1 = array(
+            $userAccountInfo
+        );
+
+        $alltuples2 = array(
+            $userAccountRegister
+        );
+
+        executeBoundSQL("insert into UserAccount values (:bind1, :bind2)", $alltuples1);
+        executeBoundSQL("insert into UserAccount_Registers values (:bind1, :bind3, SYSDATE, :bind5)", $alltuples2);
+
+        OCICommit($db_conn);
+    }
+
+    function handleCountRequest()
+    {
+        global $db_conn;
+
+        $weekends = $_GET['weekend'];
+        $holidays = $_GET['holiday'];
+
+        $result = executePlainSQL("SELECT lineName FROM StationLine_Scheduled_For_Timing WHERE activeOnWeekends = '" . $weekends . "' OR activeOnHolidays = '" . $holidays . "'");
+
+        if (($row = oci_fetch_row($result)) != false) {
+            echo "<br> The active lines are: " . $row[0] . "<br>"; // so far this is only printing out the first line name
         }
+    }
 
-        function disconnectFromDB() {
-            global $db_conn;
+    function handleProjectTableNamesRequest()
+    {
+        global $db_conn;
+        $count = 1;
 
-            debugAlertMessage("Disconnect from Database");
-            OCILogoff($db_conn);
+        $result = executePlainSQL("SELECT table_name FROM user_tables");
+
+        echo "Names of tables in this database: " . "<br>";
+        while ($row = oci_fetch_array($result, OCI_BOTH)) {
+            echo "<br>" . $count . ": " . $row[0] . "<br>";
+            $count++;
         }
+    }
 
-        function handleUpdateRequest() {
-            global $db_conn;
+    function handleTableSchemaRequest()
+    {
+        global $db_conn;
+        $tabName = $_GET['tabName'];
 
-            $name = $_POST['userName'];
-            $old_pass = $_POST['oldPass'];
-            $new_pass = $_POST['newPass'];
+        $result = executePlainSQL("SELECT column_name from ALL_TAB_COLUMNS WHERE table_name='$tabName'");
 
-            // you need the wrap the old name and new name values with single quotations
-            executePlainSQL("UPDATE UserAccount SET password='" . $new_pass . "' WHERE password='" . $old_pass . "' AND username='" . $name . "'");
-            OCICommit($db_conn);
+        echo "The data from this table includes: " . "<br>";
+        while ($row = oci_fetch_array($result, OCI_BOTH)) {
+            echo "<br>" . $row[0] . "<br>";
         }
+    }
 
-        function handleResetRequest() {
-            global $db_conn;
-            // Drop old table
-            executePlainSQL("DROP TABLE demoTable");
+    function handleColumnsToDelete()
+    {
+        global $db_conn;
 
-            // Create new table
-            echo "<br> creating new table <br>";
-            executePlainSQL("CREATE TABLE demoTable (id int PRIMARY KEY, name char(30))");
-            OCICommit($db_conn);
-        }
+        if (!empty($_POST['deleteFromTuple'])) {
+            $tabName = $_POST['deleteFromTuple'];
 
-        // function random_int($n) {
-        //     $min = pow(10, $n - 1);
-        //     $max = pow(10, $n) - 1;
-        //     return mt_rand($min, $max);
-        // };
-
-        function handleInsertRequest() {
-            global $db_conn;
-
-            $userAccountInfo = array (
-                ":bind1" => $_POST['username'],
-                ":bind2" => $_POST['password']
-            );
-
-            $userAccountRegister = array (
-                ":bind1" => $_POST['username'],
-                ":bind3" => 'A8H6G2H837',
-                ":bind5" => 1234567890 // need to generate
-            );
-
-            $alltuples1 = array (
-                $userAccountInfo
-            );
-
-            $alltuples2 = array (
-                $userAccountRegister
-            );
-
-            executeBoundSQL("insert into UserAccount values (:bind1, :bind2)", $alltuples1);
-            executeBoundSQL("insert into UserAccount_Registers values (:bind1, :bind3, SYSDATE, :bind5)", $alltuples2);
-
-            OCICommit($db_conn);
-        }
-
-        function handleCountRequest() {
-            global $db_conn;
-
-            $weekends = $_GET['weekend'];
-            $holidays = $_GET['holiday'];
-
-            $result = executePlainSQL("SELECT lineName FROM StationLine_Scheduled_For_Timing WHERE activeOnWeekends = '". $weekends ."' OR activeOnHolidays = '". $holidays ."'");
-
-            if (($row = oci_fetch_row($result)) != false) {
-                echo "<br> The active lines are: " . $row[0] . "<br>"; // so far this is only printing out the first line name
-            }
-        }
-
-        function handleProjectTableNamesRequest() {
-            global $db_conn;
-            $count = 1;
-
-            $result = executePlainSQL("SELECT table_name FROM user_tables");
-
-            echo "Names of tables in this database: " ."<br>";
-            while ($row = oci_fetch_array($result, OCI_BOTH)) {
-                echo "<br>" . $count . ": " . $row[0] . "<br>";
-                $count++; 
-            }
-        }
-
-        function handleTableSchemaRequest() {
-            global $db_conn;
-            $tabName = $_GET['tabName'];
-            
             $result = executePlainSQL("SELECT column_name from ALL_TAB_COLUMNS WHERE table_name='$tabName'");
 
-            echo "The data from this table includes: " . "<br>";
+            echo "You have chosen " . $tabName . " which includes the following data: " . "<br>";
             while ($row = oci_fetch_array($result, OCI_BOTH)) {
                 echo "<br>" . $row[0] . "<br>";
             }
-        }
 
-        function handleColumnsToDelete() {
-            global $db_conn;
-
-                if(!empty($_POST['deleteFromTuple'])) {
-                    $tabName = $_POST['deleteFromTuple'];
-                    
-                    $result = executePlainSQL("SELECT column_name from ALL_TAB_COLUMNS WHERE table_name='$tabName'");
-        
-                    echo "You have chosen " . $tabName . " which includes the following data: " . "<br>";
-                    while ($row = oci_fetch_array($result, OCI_BOTH)) {
-                        echo "<br>" . $row[0] . "<br>";
-                    }
-                    
-                    if($tabName == "CARD") {
-                        echo "<br>" . "Operation available: remove cards that were activated before 2010-01-01,
+            if ($tabName == "CARD") {
+                echo "<br>" . "Operation available: remove cards that were activated before 2010-01-01,
                         which was when newly designed cards were rolled out";
-                    } else {
-                        echo "<br>" . "No operation available";
-                    }
+            } else {
+                echo "<br>" . "No operation available";
+            }
 
-                } else {
-                    echo 'Please select the table you wish to delete from.';
-                }  
+        } else {
+            echo 'Please select the table you wish to delete from.';
         }
+    }
 
-        function handleTupleDeletion() {
-            global $db_conn;
-            
-            if(!empty($_POST['deleteFromTuple'])) {
-                $tabName = $_POST['deleteFromTuple'];
-                
-                $sqlCount = "SELECT count(*) FROM Card_Links_To";
-                $resultCountSQL = executePlainSQL($sqlCount);
+    function handleTupleDeletion()
+    {
+        global $db_conn;
 
-                if (($resultCount = oci_fetch_row($resultCountSQL)) != false) {
-                    echo "Before deletion, there are " . $resultCount[0] . " tuples in the database" . "<br>";
-                }
-    
-                $sqlRemove = "DELETE FROM Card_Links_To WHERE activationDate < TO_DATE('2010-01-01', 'YYYY-MM-DD')";
-                $result = executePlainSQL($sqlRemove);
-                OCICommit($db_conn);
+        if (!empty($_POST['deleteFromTuple'])) {
+            $tabName = $_POST['deleteFromTuple'];
+
+            $sqlCount = "SELECT count(*) FROM Card_Links_To";
+            $resultCountSQL = executePlainSQL($sqlCount);
+
+            if (($resultCount = oci_fetch_row($resultCountSQL)) != false) {
+                echo "Before deletion, there are " . $resultCount[0] . " tuples in the database" . "<br>";
+            }
+
+            $sqlRemove = "DELETE FROM Card_Links_To WHERE activationDate < TO_DATE('2010-01-01', 'YYYY-MM-DD')";
+            $result = executePlainSQL($sqlRemove);
+            OCICommit($db_conn);
 
             $resultCountSQLAfter = executePlainSQL("SELECT count(*) FROM Card_Links_To");
 
             if (($resultCountAfter = oci_fetch_row($resultCountSQLAfter, OCI_BOTH)) != false) {
-                    echo "<br>" . "Deletion was successful!" . "<br>" . "There are now only " . $resultCountAfter[0] . " tuples in the database" . "<br>";
-                }
-            } else {
-                echo 'Please select the table you wish to delete from.';
-                exit;
-            }  
+                echo "<br>" . "Deletion was successful!" . "<br>" . "There are now only " . $resultCountAfter[0] . " tuples in the database" . "<br>";
+            }
+        } else {
+            echo 'Please select the table you wish to delete from.';
+            exit;
         }
+    }
 
     // For each transit line, find the number of stations that are part of that line
     function handleGroupByQuery()
@@ -421,10 +444,39 @@
         }
     }
 
+    // For each station, find the total amount of transit lines that pass through them, only for stations that are passed through more than one line
+    function handleHavingQuery()
+    {
+        $SQL = "SELECT LHS.stationID, COUNT(DISTINCT LHS.lineName) AS linesPassedThrough
+            FROM Line_Has_Station LHS
+            GROUP BY LHS.stationID
+            HAVING COUNT(DISTINCT LHS.lineName) > 1";
+
+        $resultSQL = executePlainSQL($SQL);
+
+        if ($resultSQL) {
+            echo "<table>";
+            echo "<tr><th>StationID</th><th>Number of Lines That Pass Through</th></tr>";
+
+            while (($result = oci_fetch_assoc($resultSQL)) != false) {
+                echo "<tr>";
+                echo "<td>" . $result['STATIONID'] . "</td>";
+                echo "<td>" . $result['LINESPASSEDTHROUGH'] . "</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
+
+            oci_free_statement($resultSQL);
+        } else {
+            echo "No values in database that fit the criteria";
+        }
+    }
+
     // HANDLE ALL POST ROUTES
-	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-    function handlePOSTRequest() {
+    // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
+    // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
+    function handlePOSTRequest()
+    {
         if (connectToDB()) {
             if (array_key_exists('resetTablesRequest', $_POST)) {
                 handleResetRequest();
@@ -438,36 +490,40 @@
                 handleTupleDeletion();
             } else if (array_key_exists('groupByRequest', $_POST)) {
                 handleGroupByQuery();
+            } else if(array_key_exists('havingRequest', $_POST)) {
+                handleHavingQuery();
+            } 
+
+            disconnectFromDB();
+        }
+    }
+
+    // HANDLE ALL GET ROUTES
+    // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
+    function handleGETRequest()
+    {
+        if (connectToDB()) {
+            if (array_key_exists('countTuples', $_GET)) {
+                handleCountRequest();
+            } else if (array_key_exists('viewTableNames', $_GET)) {
+                handleProjectTableNamesRequest();
+            } else if (array_key_exists('viewTableSchema', $_GET)) {
+                handleTableSchemaRequest();
             }
 
             disconnectFromDB();
         }
     }
 
-        // HANDLE ALL GET ROUTES
-	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-        function handleGETRequest() {
-            if (connectToDB()) {
-                if (array_key_exists('countTuples', $_GET)) {
-                    handleCountRequest();
-                } else if (array_key_exists('viewTableNames', $_GET)) {
-                    handleProjectTableNamesRequest();
-                } else if (array_key_exists('viewTableSchema', $_GET)) {
-                    handleTableSchemaRequest();
-                }
-
-                disconnectFromDB();
-            }
-        }
-
-		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['deleteSubmit'])
-        || isset($_POST['deleteColumnsSubmit']) || isset($_POST['groupBySubmit'])
+    if (
+        isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['deleteSubmit'])
+        || isset($_POST['deleteColumnsSubmit']) || isset($_POST['groupBySubmit']) || isset($_POST['havingSubmit']
     ) {
-            handlePOSTRequest();
-        } else if (isset($_GET['countTupleRequest']) || isset($_GET['projectionQueryRequest']) || isset($_GET['tableSchemaRequest'])) {
-            handleGETRequest();
-        }
-		?>
+        handlePOSTRequest();
+    } else if (isset($_GET['countTupleRequest']) || isset($_GET['projectionQueryRequest']) || isset($_GET['tableSchemaRequest'])) {
+        handleGETRequest();
+    }
+    ?>
 </body>
 
 </html>
