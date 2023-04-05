@@ -36,8 +36,8 @@
         <h2>Insert Values into DemoTable</h2>
         <form method="POST" action="oracle-test.php"> <!--refresh page when submitted-->
             <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
-            Number: <input type="text" name="insNo"> <br /><br />
-            Name: <input type="text" name="insName"> <br /><br />
+            Username: <input type="text" name="username"> <br /><br />
+            Password: <input type="text" name="password"> <br /><br />
 
             <input type="submit" value="Insert" name="insertSubmit"></p>
         </form>
@@ -49,17 +49,21 @@
 
         <form method="POST" action="oracle-test.php"> <!--refresh page when submitted-->
             <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
-            Old Name: <input type="text" name="oldName"> <br /><br />
-            New Name: <input type="text" name="newName"> <br /><br />
+            UserName: <input type="text" name="userName"> <br /><br />
+
+            Old Password: <input type="text" name="oldPass"> <br /><br />
+            New Password: <input type="text" name="newPass"> <br /><br />
 
             <input type="submit" value="Update" name="updateSubmit"></p>
         </form>
 
         <hr />
 
-        <h2>Count the Tuples in DemoTable</h2>
+        <h2>Active Lines</h2>
         <form method="GET" action="oracle-test.php"> <!--refresh page when submitted-->
             <input type="hidden" id="countTupleRequest" name="countTupleRequest">
+            Active on Weekends<input type="checkbox" name="weekend" value=1> <br /><br />
+            Active on Holidays<input type="checkbox" name="holiday" value=1> <br /><br />
             <input type="submit" name="countTuples"></p>
         </form>
 
@@ -200,11 +204,12 @@
         function handleUpdateRequest() {
             global $db_conn;
 
-            $old_name = $_POST['oldName'];
-            $new_name = $_POST['newName'];
+            $name = $_POST['userName'];
+            $old_pass = $_POST['oldPass'];
+            $new_pass = $_POST['newPass'];
 
             // you need the wrap the old name and new name values with single quotations
-            executePlainSQL("UPDATE demoTable SET name='" . $new_name . "' WHERE name='" . $old_name . "'");
+            executePlainSQL("UPDATE UserAccount SET password='" . $new_pass . "' WHERE password='" . $old_pass . "' AND username='" . $name . "'");
             OCICommit($db_conn);
         }
 
@@ -219,30 +224,50 @@
             OCICommit($db_conn);
         }
 
+        // function random_int($n) {
+        //     $min = pow(10, $n - 1);
+        //     $max = pow(10, $n) - 1;
+        //     return mt_rand($min, $max);
+        // };
+
         function handleInsertRequest() {
             global $db_conn;
 
-            //Getting the values from user and insert data into the table
-            $tuple = array (
-                ":bind1" => $_POST['insNo'],
-                ":bind2" => $_POST['insName']
+            $userAccountInfo = array (
+                ":bind1" => $_POST['username'],
+                ":bind2" => $_POST['password']
             );
 
-            $alltuples = array (
-                $tuple
+            $userAccountRegister = array (
+                ":bind1" => $_POST['username'],
+                ":bind3" => 'A8H6G2H837',
+                ":bind5" => 1234567890 // need to generate
             );
 
-            executeBoundSQL("insert into demoTable values (:bind1, :bind2)", $alltuples);
+            $alltuples1 = array (
+                $userAccountInfo
+            );
+
+            $alltuples2 = array (
+                $userAccountRegister
+            );
+
+            executeBoundSQL("insert into UserAccount values (:bind1, :bind2)", $alltuples1);
+            executeBoundSQL("insert into UserAccount_Registers values (:bind1, :bind3, SYSDATE, :bind5)", $alltuples2);
+
             OCICommit($db_conn);
         }
 
         function handleCountRequest() {
             global $db_conn;
 
-            $result = executePlainSQL("SELECT Count(*) FROM demoTable");
+            $weekends = $_GET['weekend'];
+            $holidays = $_GET['holiday'];
+
+            $result = executePlainSQL("SELECT lineName FROM StationLine_Scheduled_For_Timing WHERE activeOnWeekends = '". $weekends ."' OR activeOnHolidays = '". $holidays ."'");
 
             if (($row = oci_fetch_row($result)) != false) {
-                echo "<br> The number of tuples in demoTable: " . $row[0] . "<br>";
+                echo "<br> The active lines are: " . $row[0] . "<br>"; // so far this is only printing out the first line name
             }
         }
 
