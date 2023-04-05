@@ -40,7 +40,7 @@
         <!--refresh page when submitted-->
         <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
         Username: <input type="text" name="username"> <br /><br />
-        Password: <input type="text" name="password"> <br /><br />
+        Password: <input type="password" name="password"> <br /><br />
 
         <input type="submit" value="Insert" name="insertSubmit"></p>
     </form>
@@ -53,10 +53,11 @@
     <form method="POST" action="oracle-test.php">
         <!--refresh page when submitted-->
         <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+
         UserName: <input type="text" name="userName"> <br /><br />
 
-        Old Password: <input type="text" name="oldPass"> <br /><br />
-        New Password: <input type="text" name="newPass"> <br /><br />
+        Old Password: <input type="password" name="oldPass"> <br /><br />
+        New Password: <input type="password" name="newPass"> <br /><br />
 
         <input type="submit" value="Update" name="updateSubmit"></p>
     </form>
