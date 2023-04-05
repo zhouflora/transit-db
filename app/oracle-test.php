@@ -75,22 +75,31 @@
 
     <hr />
 
-    <h2>See Table Names</h2>
-    <form method="GET" action="oracle-test.php">
-        <!--refresh page when submitted-->
+    <hr />
+
+    <h2>Projection</h2>
+    <form method="GET" action="oracle-test.php" target="_blank"> <!--refresh page when submitted-->
         <input type="hidden" id="projectionQueryRequest" name="projectionQueryRequest">
+        Click below to see a list of all the tables in this database <br /><br />
         <input type="submit" value="See Table Data" name="viewTableNames"></p>
     </form>
 
     <h3>Choose Table To View</h3>
-    <form method="GET" action="oracle-test.php">
-        <!--refresh page when submitted-->
+    <form method="GET" action="oracle-test.php"> <!--refresh page when submitted-->
         <input type="hidden" id="tableSchemaRequest" name="tableSchemaRequest">
 
-        Please type the name [in capitals] of any one table to view its schema details:
-        <input type="text" name="tabName"> <br /><br />
-
+        Please type the name (in capitals) of any one table to view its schema details (eg. LINE_HAS_STATION)
+        <br /><br />
+        <input type="text" name="tabName">
         <input type="submit" value="Confirm" name="viewTableSchema"></p>
+
+        <h3>Retrieve Subset of Data</h3>
+        <input type="hidden" id="projectionFinalRequest" name="projectionFinalRequest">
+        Please type the name of the table you want to extract data from, followed by the names of the columns (in
+        capitals) from the table.
+        Separate inputs with commas (eg. "LINE_HAS_STATION, STATIONID, LINENAME") <br /><br />
+        <input type="text" name="colName">
+        <input type="submit" value="Confirm" name="projectionSubmit"></p>
     </form>
 
     <hr />
@@ -343,6 +352,7 @@
     function handleProjectTableNamesRequest()
     {
         global $db_conn;
+        $success = False;
         $count = 1;
 
         $result = executePlainSQL("SELECT table_name FROM user_tables");
@@ -357,6 +367,7 @@
     function handleTableSchemaRequest()
     {
         global $db_conn;
+        $success = False;
         $tabName = $_GET['tabName'];
 
         $result = executePlainSQL("SELECT column_name from ALL_TAB_COLUMNS WHERE table_name='$tabName'");
@@ -364,6 +375,32 @@
         echo "The data from this table includes: " . "<br>";
         while ($row = oci_fetch_array($result, OCI_BOTH)) {
             echo "<br>" . $row[0] . "<br>";
+        }
+    }
+
+    function handleProjectionColumns()
+    {
+        global $db_conn;
+        $success = False;
+        $col = $_GET['colName'];
+        $colsinArr = explode(",", $col);
+        $tabName = $colsinArr[0];
+
+        array_shift($colsinArr);
+        $colsReverted = implode(',', $colsinArr);
+
+        $result = executePlainSQL("SELECT $colsReverted FROM $tabName");
+
+        foreach ($colsinArr as $colName) {
+            echo $colName . "\t";
+        }
+        echo "<br>";
+
+        while ($row = oci_fetch_array($result, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            foreach ($row as $item) {
+                echo $item . " ";
+            }
+            echo "<br>";
         }
     }
 
@@ -478,7 +515,8 @@
         }
     }
 
-    function handleNestedAggregation() {
+    function handleNestedAggregation()
+    {
 
         global $db_conn;
 
@@ -523,9 +561,9 @@
                 handleTupleDeletion();
             } else if (array_key_exists('groupByRequest', $_POST)) {
                 handleGroupByQuery();
-            } else if(array_key_exists('havingRequest', $_POST)) {
+            } else if (array_key_exists('havingRequest', $_POST)) {
                 handleHavingQuery();
-            } 
+            }
 
             disconnectFromDB();
         }
@@ -540,8 +578,10 @@
                 handleCountRequest();
             } else if (array_key_exists('viewTableNames', $_GET)) {
                 handleProjectTableNamesRequest();
-            } else if (array_key_exists('viewTableSchema', $_GET)) {
+            } else if (array_key_exists('viewTableSchema', $_GET) && isset($_GET['tableSchemaRequest'])) {
                 handleTableSchemaRequest();
+            } else if (array_key_exists('projectionSubmit', $_GET) && isset($_GET['projectionFinalRequest'])) {
+                handleProjectionColumns();
             }
 
             disconnectFromDB();
@@ -553,7 +593,10 @@
         || isset($_POST['deleteColumnsSubmit']) || isset($_POST['groupBySubmit']) || isset($_POST['havingSubmit'])
     ) {
         handlePOSTRequest();
-    } else if (isset($_GET['countTupleRequest']) || isset($_GET['projectionQueryRequest']) || isset($_GET['tableSchemaRequest'])) {
+    } else if (
+        isset($_GET['countTupleRequest']) || isset($_GET['projectionQueryRequest']) || isset($_GET['tableSchemaRequest'])
+        || isset($_GET['projectionFinalRequest'])
+    ) {
         handleGETRequest();
     }
     ?>
