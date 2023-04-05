@@ -143,6 +143,14 @@
         <input type="submit" value="Get Results" name="havingSubmit"></p>
     </form>
 
+    <h2>Nested Aggregation: Group By</h2>
+    <form method="POST" action="new-test.php">
+        <!--refresh page when submitted-->
+        <input type="hidden" id="groupByRequest" name="groupByRequest">
+        This will find the most popular type of pass purchased by users. <br /><br />
+        <input type="submit" value="Find Pass" name="groupBySubmit"></p>
+    </form>
+
     <?php
     //this tells the system that it's no longer just parsing html; it's now parsing PHP
     
@@ -470,6 +478,33 @@
             oci_free_statement($resultSQL);
         } else {
             echo "No values in database that fit the criteria";
+        }
+    }
+
+    function handleNestedAggregation() {
+
+        global $db_conn;
+
+        $SQL = "SELECT type, COUNT(transactionID) FROM Pass_Loads_To GROUP BY type HAVING COUNT(transactionID) >= all(SELECT COUNT(p.transactionID) FROM Pass_Loads_To p GROUP BY p.type)";
+
+        $result = executePlainSQL($SQL);
+
+        if ($result) {
+
+            echo "<table>";
+            echo "<tr><th>Pass Type</th><th>Number Sold</th></tr>";
+
+            while (($result = oci_fetch_assoc($result)) != false) {
+                echo "<tr>";
+                echo "<td>" . $result['TYPE'] . "</td>";
+                echo "<td>" . $result['COUNT(transactionID)'] . "</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
+
+            oci_free_statement($result);
+        } else {
+            echo "There are no passes in the database that fit this criteria.";
         }
     }
 
