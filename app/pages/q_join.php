@@ -24,23 +24,24 @@
                         Select a transit line to see the name and email of the drivers operating in that line.
                     </p>
                     <form method="GET" action="q_join.php">
-                        <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Line</label>
-                            <select class="form-select" name="selection">
+                        <div class="mb-3 input-group">
+                            <label for="line_selection" class="input-group-text">Line</label>
+                            <select class="form-select" id="line_selection" name="selection">
                                 <option selected>Select...</option>
                                 <?php
-                                    connectToDB();
-
-                                    // Get line names
-                                    $query = "SELECT linename FROM line";
-                                    $result = executePlainSQL($query);
-                                
-                                    // Generate the options
-                                    while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-                                        echo '<option value="' . $row[0] . '">' . $row[0] . '</option>';
+                                    if (connectToDB()) {
+                
+                                        // Get line names
+                                        $query = "SELECT linename FROM line";
+                                        $result = executePlainSQL($query);
+                                    
+                                        // Generate the options
+                                        while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+                                            echo '<option value="' . $row[0] . '">' . $row[0] . '</option>';
+                                        }
+                                    
+                                        disconnectFromDB();
                                     }
-                                
-                                    disconnectFromDB();
                                 ?>
                             </select>
                         </div>
