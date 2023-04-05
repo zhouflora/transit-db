@@ -72,7 +72,7 @@
         <h2>See Table Names</h2>
         <form method="GET" action="oracle-test.php"> <!--refresh page when submitted-->
             <input type="hidden" id="projectionQueryRequest" name="projectionQueryRequest">
-            <input type="submit" value="See Table Names" name="viewTableNames"></p>
+            <input type="submit" value="See Table Data" name="viewTableNames"></p>
         </form>
 
         <h3>Choose Table To View</h3>
@@ -86,6 +86,31 @@
         </form>
 
         <hr />
+
+        <h2>Delete Table Values</h2>
+        <form name="delete" method="POST" action="fztest.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="deleteTupleRequest" name="deleteTupleRequest">
+            Select the tuple you wish to change <br>
+            <select name="deleteFromTuple" id="deleteFromTUple">
+                <option value="" disable selected>Select...</option>;
+                <option value="USERACCOUNT">USERACCOUNT</option>;
+                <option value="CARD">CARD</option>;
+                <option value="PASS">PASS</option>;
+                <!-- <option selected="selected">Select...</option>
+                <?php            
+                // $canChange = array("USERACCOUNT", "CARD", "PASS");
+                // foreach($canChange as $tableName) {
+                //     echo "<option value=($tableName)>$tableName</option>";
+                // }
+                ?> 
+                -->
+            </select>
+            <input type="submit" value="See Table Data" name="deleteSubmit"></p>
+
+            <input type="hidden" id="deleteColumnsRequest" name="deleteColumnsRequest">
+            If you wish to go ahead and delete tuples satisfying the given condition, click to confirm
+            <input type="submit" value="Confirm Delete" name="deleteColumnsSubmit"></p>
+        </form>
 
 <hr />
 
@@ -296,21 +321,79 @@
             }
         }
 
+        function handleColumnsToDelete() {
+            global $db_conn;
+
+                if(!empty($_POST['deleteFromTuple'])) {
+                    $tabName = $_POST['deleteFromTuple'];
+                    
+                    $result = executePlainSQL("SELECT column_name from ALL_TAB_COLUMNS WHERE table_name='$tabName'");
+        
+                    echo "You have chosen " . $tabName . " which includes the following data: " . "<br>";
+                    while ($row = oci_fetch_array($result, OCI_BOTH)) {
+                        echo "<br>" . $row[0] . "<br>";
+                    }
+                    
+                    if($tabName == "CARD") {
+                        echo "<br>" . "Operation available: remove cards that were activated before 2010-01-01,
+                        which was when newly designed cards were rolled out";
+                    } else {
+                        echo "<br>" . "No operation available";
+                    }
+
+                } else {
+                    echo 'Please select the table you wish to delete from.';
+                }  
+        }
+
+        function handleTupleDeletion() {
+            global $db_conn;
+            
+            if(!empty($_POST['deleteFromTuple'])) {
+                $tabName = $_POST['deleteFromTuple'];
+                
+                $sqlCount = "SELECT count(*) FROM Card_Links_To";
+                $resultCountSQL = executePlainSQL($sqlCount);
+
+                if (($resultCount = oci_fetch_row($resultCountSQL)) != false) {
+                    echo "Before deletion, there are " . $resultCount[0] . " tuples in the database" . "<br>";
+                }
+    
+                $sqlRemove = "DELETE FROM Card_Links_To WHERE activationDate < TO_DATE('2010-01-01', 'YYYY-MM-DD')";
+                $result = executePlainSQL($sqlRemove);
+                OCICommit($db_conn);
+
+                $resultCountSQLAfter = executePlainSQL("SELECT count(*) FROM $result");
+
+                if (($resultCountAfter = oci_fetch_row($resultCountSQLAfter)) != false) {
+                    echo "<br>" . "Deletion was successful!" . "<br>" . "There are now only " . $resultCountAfter[0] . " tuples in the database" . "<br>";
+                }
+            } else {
+                echo 'Please select the table you wish to delete from.';
+                exit;
+            }  
+        }
+
         // HANDLE ALL POST ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-        function handlePOSTRequest() {
-            if (connectToDB()) {
-                if (array_key_exists('resetTablesRequest', $_POST)) {
-                    handleResetRequest();
-                } else if (array_key_exists('updateQueryRequest', $_POST)) {
-                    handleUpdateRequest();
-                } else if (array_key_exists('insertQueryRequest', $_POST)) {
-                    handleInsertRequest();
-                }
-
-                disconnectFromDB();
+	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
+    function handlePOSTRequest() {
+        if (connectToDB()) {
+            if (array_key_exists('resetTablesRequest', $_POST)) {
+                handleResetRequest();
+            } else if (array_key_exists('updateQueryRequest', $_POST)) {
+                handleUpdateRequest();
+            } else if (array_key_exists('insertQueryRequest', $_POST)) {
+                handleInsertRequest();
+            } else if(array_key_exists('deleteTupleRequest', $_POST) && isset($_POST['deleteSubmit'])) {
+                handleColumnsToDelete();
+            } else if(array_key_exists('deleteColumnsRequest', $_POST) && isset($_POST['deleteColumnsSubmit'])) {
+                handleTupleDeletion();
             }
+
+            disconnectFromDB();
         }
+    }
 
         // HANDLE ALL GET ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
@@ -328,7 +411,8 @@
             }
         }
 
-		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit'])) {
+		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['deleteSubmit'])
+    || isset($_POST['deleteColumnsSubmit'])) {
             handlePOSTRequest();
         } else if (isset($_GET['countTupleRequest']) || isset($_GET['projectionQueryRequest']) || isset($_GET['tableSchemaRequest'])) {
             handleGETRequest();
