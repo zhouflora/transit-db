@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="css/custom_styles.css" />
         <script src="bootstrap/js/bootstrap.min.js" ></script>
     </head>
-    <body>
+    <body class="main">
         <?php include('./components/navbar.php');?>
         <div class="card-body lead">
             Select your desired query from the dropdown above.

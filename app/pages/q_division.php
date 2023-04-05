@@ -16,35 +16,36 @@
         <div class="p-4">
             <div class="card">
                 <div class="card-header">
-                    Join Query
+                    Division Query
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">Drivers of a transit line</h5>
+                    <h5 class="card-title">Experienced technicians</h5>
                     <p class="card-text">
-                        Select a transit line to see the name and email of the drivers operating in that line.
+                        Find the name and salary of the technicians who have serviced
+                        all the buses.
                     </p>
-                    <form method="GET" action="q_join.php">
+                    <form method="GET" action="q_division.php">
                         <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Line</label>
-                            <select class="form-select" name="selection">
+                            <!--<label for="exampleInputEmail1" class="form-label">Line</label>
+                             <select class="form-select" name="selection">
                                 <option selected>Select...</option>
                                 <?php
-                                    connectToDB();
+                                    // connectToDB();
 
-                                    // Get line names
-                                    $query = "SELECT linename FROM line";
-                                    $result = executePlainSQL($query);
+                                    // // Get line names
+                                    // $query = "SELECT linename FROM line";
+                                    // $result = executePlainSQL($query);
                                 
-                                    // Generate the options
-                                    while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-                                        echo '<option value="' . $row[0] . '">' . $row[0] . '</option>';
-                                    }
+                                    // // Generate the options
+                                    // while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+                                    //     echo '<option value="' . $row[0] . '">' . $row[0] . '</option>';
+                                    // }
                                 
-                                    disconnectFromDB();
+                                    // disconnectFromDB();
                                 ?>
-                            </select>
+                            </select> -->
                         </div>
-                        <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+                        <button type="submit" class="btn btn-primary" name="submit" >Find</button>
                         
                     </form>
                 </div>
@@ -55,23 +56,27 @@
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Driver Name</th>
-                            <th scope="col">Driver Email</th>
+                            <th scope="col">Technician Name</th>
+                            <th scope="col">Technician Salary</th>
                         </tr>
                     </thead>
                     <tbody>
                     <?php
-                        if (isset($_GET['selection']) && array_key_exists('submit', $_GET) && connectToDB()) {
-                            $selected_line = $_GET['selection'];
+                        if (array_key_exists('submit', $_GET) && connectToDB()) {
+                            // $selected_line = $_GET['selection'];
 
                             // Query the database
-                            $query = "SELECT EMPLOYEE.NAME, EMPLOYEE.EMAIL
-                                FROM OPERATES_IN, DRIVES, DRIVER, EMPLOYEE
-                                WHERE OPERATES_IN.LINENAME = '$selected_line'
-                                AND OPERATES_IN.VEHICLEID = DRIVES.VEHICLEID
-                                AND OPERATES_IN.LINENAME = DRIVES.LINENAME
-                                AND DRIVES.EMPLOYEEID = DRIVER.EMPLOYEEID
-                                AND DRIVER.EMPLOYEEID = EMPLOYEE.EMPLOYEEID";
+                            $query = "SELECT e.name, e.salary
+                                FROM employee e, technician t
+                                WHERE e.employeeID = t.employeeID
+                                AND NOT EXISTS
+                                (SELECT b.vehicleID
+                                FROM bus b
+                                MINUS 
+                                (SELECT s.vehicleID
+                                FROM services s
+                                WHERE s.employeeID = t.employeeID))";
+                                
                             $result = executePlainSQL($query);
 
                             // Fill out the table
@@ -81,8 +86,8 @@
                                 echo "
                                     <tr>
                                     <th scope='row'> $count </th>
-                                    <td>" . $row["NAME"] . "</td>
-                                    <td>" . $row["EMAIL"] . "</td>
+                                    <td>" . $row[0] . "</td>
+                                    <td>" . $row[1] . "</td>
                                     </tr>";
                             }
                             if ($count == 0) {
@@ -91,7 +96,6 @@
                             
                             disconnectFromDB();
                         }
-                        
                     ?>
                     </tbody>
                 </table>
