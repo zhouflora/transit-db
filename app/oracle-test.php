@@ -88,7 +88,7 @@
         <hr />
 
         <h2>Delete Table Values</h2>
-        <form name="delete" method="POST" action="fztest.php"> <!--refresh page when submitted-->
+        <form name="delete" method="POST" action="oracle-test.php"> <!--refresh page when submitted-->
             <input type="hidden" id="deleteTupleRequest" name="deleteTupleRequest">
             Select the tuple you wish to change <br>
             <select name="deleteFromTuple" id="deleteFromTUple">
