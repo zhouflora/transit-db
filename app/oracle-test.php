@@ -16,87 +16,95 @@
   extension.  You must also change the username and password on the
   OCILogon below to be your ORACLE username and password -->
 
-  <html>
-    <head>
-        <title>CPSC 304 PHP/Oracle Demonstration</title>
-    </head>
+<html>
 
-    <body>
-        <h2>Reset</h2>
-        <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
+<head>
+    <title>CPSC 304 PHP/Oracle Demonstration</title>
+</head>
 
-        <form method="POST" action="oracle-test.php">
-            <!-- if you want another page to load after the button is clicked, you have to specify that page in the action parameter -->
-            <input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
-            <p><input type="submit" value="Reset" name="reset"></p>
-        </form>
+<body>
+    <h2>Reset</h2>
+    <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you
+        MUST use reset</p>
 
-        <hr />
+    <form method="POST" action="oracle-test.php">
+        <!-- if you want another page to load after the button is clicked, you have to specify that page in the action parameter -->
+        <input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
+        <p><input type="submit" value="Reset" name="reset"></p>
+    </form>
 
-        <h2>Insert Values into DemoTable</h2>
-        <form method="POST" action="oracle-test.php"> <!--refresh page when submitted-->
-            <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
-            Username: <input type="text" name="username"> <br /><br />
-            Password: <input type="text" name="password"> <br /><br />
+    <hr />
 
-            <input type="submit" value="Insert" name="insertSubmit"></p>
-        </form>
+    <h2>Insert Values into DemoTable</h2>
+    <form method="POST" action="oracle-test.php">
+        <!--refresh page when submitted-->
+        <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
+        Username: <input type="text" name="username"> <br /><br />
+        Password: <input type="text" name="password"> <br /><br />
 
-        <hr />
+        <input type="submit" value="Insert" name="insertSubmit"></p>
+    </form>
 
-        <h2>Update Name in DemoTable</h2>
-        <p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
+    <hr />
 
-        <form method="POST" action="oracle-test.php"> <!--refresh page when submitted-->
-            <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
-            UserName: <input type="text" name="userName"> <br /><br />
+    <h2>Update Name in DemoTable</h2>
+    <p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
 
-            Old Password: <input type="text" name="oldPass"> <br /><br />
-            New Password: <input type="text" name="newPass"> <br /><br />
+    <form method="POST" action="oracle-test.php">
+        <!--refresh page when submitted-->
+        <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+        UserName: <input type="text" name="userName"> <br /><br />
 
-            <input type="submit" value="Update" name="updateSubmit"></p>
-        </form>
+        Old Password: <input type="text" name="oldPass"> <br /><br />
+        New Password: <input type="text" name="newPass"> <br /><br />
 
-        <hr />
+        <input type="submit" value="Update" name="updateSubmit"></p>
+    </form>
 
-        <h2>Active Lines</h2>
-        <form method="GET" action="oracle-test.php"> <!--refresh page when submitted-->
-            <input type="hidden" id="countTupleRequest" name="countTupleRequest">
-            Active on Weekends<input type="checkbox" name="weekend" value=1> <br /><br />
-            Active on Holidays<input type="checkbox" name="holiday" value=1> <br /><br />
-            <input type="submit" name="countTuples"></p>
-        </form>
+    <hr />
 
-        <hr />
+    <h2>Active Lines</h2>
+    <form method="GET" action="oracle-test.php">
+        <!--refresh page when submitted-->
+        <input type="hidden" id="countTupleRequest" name="countTupleRequest">
+        Active on Weekends<input type="checkbox" name="weekend" value=1> <br /><br />
+        Active on Holidays<input type="checkbox" name="holiday" value=1> <br /><br />
+        <input type="submit" name="countTuples"></p>
+    </form>
 
-        <h2>See Table Names</h2>
-        <form method="GET" action="oracle-test.php"> <!--refresh page when submitted-->
-            <input type="hidden" id="projectionQueryRequest" name="projectionQueryRequest">
-            <input type="submit" value="See Table Data" name="viewTableNames"></p>
-        </form>
+    <hr />
 
-        <h3>Choose Table To View</h3>
-        <form method="GET" action="oracle-test.php"> <!--refresh page when submitted-->
-            <input type="hidden" id="tableSchemaRequest" name="tableSchemaRequest">
+    <h2>See Table Names</h2>
+    <form method="GET" action="oracle-test.php">
+        <!--refresh page when submitted-->
+        <input type="hidden" id="projectionQueryRequest" name="projectionQueryRequest">
+        <input type="submit" value="See Table Data" name="viewTableNames"></p>
+    </form>
 
-            Please type the name [in capitals] of any one table to view its schema details: 
-            <input type="text" name="tabName"> <br /><br />
+    <h3>Choose Table To View</h3>
+    <form method="GET" action="oracle-test.php">
+        <!--refresh page when submitted-->
+        <input type="hidden" id="tableSchemaRequest" name="tableSchemaRequest">
 
-            <input type="submit" value="Confirm" name="viewTableSchema"></p>
-        </form>
+        Please type the name [in capitals] of any one table to view its schema details:
+        <input type="text" name="tabName"> <br /><br />
 
-        <hr />
+        <input type="submit" value="Confirm" name="viewTableSchema"></p>
+    </form>
 
-        <h2>Delete Table Values</h2>
-        <form name="delete" method="POST" action="oracle-test.php"> <!--refresh page when submitted-->
-            <input type="hidden" id="deleteTupleRequest" name="deleteTupleRequest">
-            Select the tuple you wish to change <br>
-            <select name="deleteFromTuple" id="deleteFromTUple">
-                <option value="" disable selected>Select...</option>;
-                <option value="USERACCOUNT">USERACCOUNT</option>;
-                <option value="CARD">CARD</option>;
-                <option value="PASS">PASS</option>;
-                <!-- <option selected="selected">Select...</option>
+    <hr />
+
+    <h2>Delete Table Values</h2>
+    <form name="delete" method="POST" action="oracle-test.php">
+        <!--refresh page when submitted-->
+        <input type="hidden" id="deleteTupleRequest" name="deleteTupleRequest">
+        Select the tuple you wish to change <br>
+        <select name="deleteFromTuple" id="deleteFromTUple">
+            <option value="" disable selected>Select...</option>;
+            <option value="USERACCOUNT">USERACCOUNT</option>;
+            <option value="CARD">CARD</option>;
+            <option value="PASS">PASS</option>;
+            <!-- <option selected="selected">Select...</option>
                 <?php            
                 // $canChange = array("USERACCOUNT", "CARD", "PASS");
                 // foreach($canChange as $tableName) {
@@ -104,17 +112,28 @@
                 // }
                 ?> 
                 -->
-            </select>
-            <input type="submit" value="See Table Data" name="deleteSubmit"></p>
+        </select>
+        <input type="submit" value="See Table Data" name="deleteSubmit"></p>
 
-            <input type="hidden" id="deleteColumnsRequest" name="deleteColumnsRequest">
-            If you wish to go ahead and delete tuples satisfying the given condition, click to confirm
-            <input type="submit" value="Confirm Delete" name="deleteColumnsSubmit"></p>
-        </form>
+        <input type="hidden" id="deleteColumnsRequest" name="deleteColumnsRequest">
+        If you wish to go ahead and delete tuples satisfying the given condition, click to confirm
+        <input type="submit" value="Confirm Delete" name="deleteColumnsSubmit"></p>
+    </form>
 
-<hr />
+    <hr />
 
-        <?php
+    <h2>Aggregation: Group By Query</h2>
+    <form method="POST" action="oracle-test.php">
+        <!--refresh page when submitted-->
+        <input type="hidden" id="groupByRequest" name="groupByRequest">
+        For each transit line, this will find the number of stations that are part of that line. <br /><br />
+
+        <input type="submit" value="Get Count" name="groupBySubmit"></p>
+    </form>
+
+    <hr />
+
+    <?php
 		//this tells the system that it's no longer just parsing html; it's now parsing PHP
 
         $success = True; //keep track of errors so it redirects the page only if there are no errors
@@ -363,9 +382,9 @@
                 $result = executePlainSQL($sqlRemove);
                 OCICommit($db_conn);
 
-                $resultCountSQLAfter = executePlainSQL("SELECT count(*) FROM $result");
+            $resultCountSQLAfter = executePlainSQL("SELECT count(*) FROM Card_Links_To");
 
-                if (($resultCountAfter = oci_fetch_row($resultCountSQLAfter)) != false) {
+            if (($resultCountAfter = oci_fetch_row($resultCountSQLAfter, OCI_BOTH)) != false) {
                     echo "<br>" . "Deletion was successful!" . "<br>" . "There are now only " . $resultCountAfter[0] . " tuples in the database" . "<br>";
                 }
             } else {
@@ -374,7 +393,35 @@
             }  
         }
 
-        // HANDLE ALL POST ROUTES
+    // For each transit line, find the number of stations that are part of that line
+    function handleGroupByQuery()
+    {
+        $SQL = "SELECT LHS.lineName, COUNT(S.stationID) AS countStations
+                FROM Line_Has_Station LHS, Station S
+                WHERE LHS.stationID = S.stationID
+                GROUP BY LHS.lineName";
+
+        $resultCountSQL = executePlainSQL($SQL);
+
+        if ($resultCountSQL) {
+            echo "<table>";
+            echo "<tr><th>LineName</th><th>Number of Stations</th></tr>";
+
+            while (($resultCount = oci_fetch_assoc($resultCountSQL)) != false) {
+                echo "<tr>";
+                echo "<td>" . $resultCount['LINENAME'] . "</td>";
+                echo "<td>" . $resultCount['COUNTSTATIONS'] . "</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
+
+            oci_free_statement($resultCountSQL);
+        } else {
+            echo "No values in database that fit the criteria";
+        }
+    }
+
+    // HANDLE ALL POST ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
     function handlePOSTRequest() {
@@ -385,10 +432,12 @@
                 handleUpdateRequest();
             } else if (array_key_exists('insertQueryRequest', $_POST)) {
                 handleInsertRequest();
-            } else if(array_key_exists('deleteTupleRequest', $_POST) && isset($_POST['deleteSubmit'])) {
+            } else if (array_key_exists('deleteTupleRequest', $_POST) && isset($_POST['deleteSubmit'])) {
                 handleColumnsToDelete();
-            } else if(array_key_exists('deleteColumnsRequest', $_POST) && isset($_POST['deleteColumnsSubmit'])) {
+            } else if (array_key_exists('deleteColumnsRequest', $_POST) && isset($_POST['deleteColumnsSubmit'])) {
                 handleTupleDeletion();
+            } else if (array_key_exists('groupByRequest', $_POST)) {
+                handleGroupByQuery();
             }
 
             disconnectFromDB();
@@ -412,11 +461,13 @@
         }
 
 		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['deleteSubmit'])
-    || isset($_POST['deleteColumnsSubmit'])) {
+        || isset($_POST['deleteColumnsSubmit']) || isset($_POST['groupBySubmit'])
+    ) {
             handlePOSTRequest();
         } else if (isset($_GET['countTupleRequest']) || isset($_GET['projectionQueryRequest']) || isset($_GET['tableSchemaRequest'])) {
             handleGETRequest();
         }
 		?>
-	</body>
+</body>
+
 </html>
