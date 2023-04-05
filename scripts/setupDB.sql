@@ -192,7 +192,7 @@ CREATE TABLE UserAccount_Registers
 CREATE TABLE Card
 (
     cardID      CHAR(10),
-    storedValue DECIMAL DEFAULT 0,
+    storedValue NUMBER(6,2) DEFAULT 0,
     PRIMARY KEY (cardID)
 );
 
