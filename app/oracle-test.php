@@ -517,7 +517,7 @@
 
     if (
         isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['deleteSubmit'])
-        || isset($_POST['deleteColumnsSubmit']) || isset($_POST['groupBySubmit']) || isset($_POST['havingSubmit']
+        || isset($_POST['deleteColumnsSubmit']) || isset($_POST['groupBySubmit']) || isset($_POST['havingSubmit'])
     ) {
         handlePOSTRequest();
     } else if (isset($_GET['countTupleRequest']) || isset($_GET['projectionQueryRequest']) || isset($_GET['tableSchemaRequest'])) {
