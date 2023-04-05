@@ -293,12 +293,6 @@
         executePlainSQL("CREATE TABLE demoTable (id int PRIMARY KEY, name char(30))");
         OCICommit($db_conn);
     }
-
-    // function random_int($n) {
-    //     $min = pow(10, $n - 1);
-    //     $max = pow(10, $n) - 1;
-    //     return mt_rand($min, $max);
-    // };
     
     function handleInsertRequest()
     {
@@ -309,10 +303,13 @@
             ":bind2" => $_POST['password']
         );
 
-        $userAccountRegister = array(
+        // function returns a unique 32 bit int catered to username
+        $random_int = crc32($_POST['username']);
+
+        $userAccountRegister = array (
             ":bind1" => $_POST['username'],
             ":bind3" => 'A8H6G2H837',
-            ":bind5" => 1234567890 // need to generate
+            ":bind5" => $random_int
         );
 
         $alltuples1 = array(
