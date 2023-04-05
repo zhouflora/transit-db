@@ -12,3 +12,7 @@ body {
         url('../img/Train_Img.jpg');
         background-size: cover;
 }
+
+.error {
+    color: red;
+}
