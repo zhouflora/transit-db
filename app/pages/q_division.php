@@ -25,28 +25,7 @@
                         all the buses.
                     </p>
                     <form method="GET" action="q_division.php">
-                        <div class="mb-3">
-                            <!--<label for="exampleInputEmail1" class="form-label">Line</label>
-                             <select class="form-select" name="selection">
-                                <option selected>Select...</option>
-                                <?php
-                                    // connectToDB();
-
-                                    // // Get line names
-                                    // $query = "SELECT linename FROM line";
-                                    // $result = executePlainSQL($query);
-                                
-                                    // // Generate the options
-                                    // while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-                                    //     echo '<option value="' . $row[0] . '">' . $row[0] . '</option>';
-                                    // }
-                                
-                                    // disconnectFromDB();
-                                ?>
-                            </select> -->
-                        </div>
                         <button type="submit" class="btn btn-primary" name="submit" >Find</button>
-                        
                     </form>
                 </div>
             </div>
