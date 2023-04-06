@@ -370,11 +370,11 @@ VALUES (456, 'CanadaLine', TO_TIMESTAMP('07:00:00', 'HH24:MI:SS'), 1, 1, 10);
 INSERT INTO StationLine_Scheduled_For_Timing
 VALUES (456, 'CanadaLine', TO_TIMESTAMP('23:10:00', 'HH24:MI:SS'), 1, 1, 10);
 INSERT INTO StationLine_Scheduled_For_Timing
-VALUES (123, 'Bus14', TO_TIMESTAMP('12:12:00', 'HH24:MI:SS'), 1, 1, NULL);
+VALUES (123, 'Bus14', TO_TIMESTAMP('12:12:00', 'HH24:MI:SS'), 1, 0, NULL);
 INSERT INTO StationLine_Scheduled_For_Timing
 VALUES (456, 'SeaBus', TO_TIMESTAMP('23:10:00', 'HH24:MI:SS'), 0, 0, 5);
 INSERT INTO StationLine_Scheduled_For_Timing
-VALUES (240, 'MillenniumLine', TO_TIMESTAMP('07:20:00', 'HH24:MI:SS'), 1, 1, 8);
+VALUES (240, 'MillenniumLine', TO_TIMESTAMP('07:20:00', 'HH24:MI:SS'), 0, 1, 8);
 
 INSERT INTO OperationControlCenter
 VALUES ('A8H6G2H837', 'Vancouver', 'Broadway-City-Hall-Control-Center');

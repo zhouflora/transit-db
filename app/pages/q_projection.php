@@ -1,0 +1,1 @@
+<?php require('../components/head.php') ?>

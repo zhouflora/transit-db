@@ -1,27 +1,13 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport"
-            content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>TransitDB</title>
-        <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="../css/custom_styles.css" />
-        <script src="../bootstrap/js/bootstrap.min.js" ></script>
-    </head>
-    <body>
-        <?php include('../components/navbar.php');?>
-        <?php include('connection.php');?>
+<?php require('../components/head.php') ?>
         <div class="p-4">
             <div class="card">
                 <div class="card-header">
                     Update Query
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">Change user password</h5>
+                    <h5 class="card-title">Change password</h5>
                     <p class="card-text">
-                        Change user password. Username and passwords are case sensitive.
+                        Enter user credentials and the new password. Username and passwords are case sensitive.
                     </p>
                     <form method="POST" action="q_update.php">
                         <div class="input-group mb-3">

@@ -21,9 +21,9 @@
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <li><a class="dropdown-item" href="/~payamfz/project_b8f8u_h5t4s_l5n2p/app/pages/q_insert.php">Insert</a></li>
             <li><a class="dropdown-item" href="/~payamfz/project_b8f8u_h5t4s_l5n2p/app/pages/q_update.php">Update</a></li>
+            <li><a class="dropdown-item" href="/~payamfz/project_b8f8u_h5t4s_l5n2p/app/pages/q_selection.php">Selection</a></li>
             <li><a class="dropdown-item" href="/~payamfz/project_b8f8u_h5t4s_l5n2p/app/pages/q_join.php">Join</a></li>
             <li><a class="dropdown-item" href="/~payamfz/project_b8f8u_h5t4s_l5n2p/app/pages/q_division.php">Division</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
           </ul>
         </li>
       </ul>
