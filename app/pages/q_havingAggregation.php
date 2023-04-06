@@ -2,16 +2,16 @@
         <div class="p-4">
             <div class="card">
                 <div class="card-header">
-                    Division Query
+                    Aggregation Query with HAVING
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">Experienced technicians</h5>
+                    <h5 class="card-title">Busy Stations</h5>
                     <p class="card-text">
-                        Find the name and salary of the technicians who have serviced
-                        all the buses.
+                        For each station, find the total number of transit lines that pass through them. <br />
+                        Only show those stations that more than one line pass through them.
                     </p>
-                    <form method="GET" action="q_division.php">
-                        <button type="submit" class="btn btn-primary" name="submit" >Find</button>
+                    <form method="GET" action="q_havingAggregation.php">
+                        <button type="submit" class="btn btn-primary" name="submit">Find</button>
                     </form>
                 </div>
             </div>
@@ -21,8 +21,8 @@
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Technician Name</th>
-                            <th scope="col">Technician Salary</th>
+                            <th scope="col">Station ID</th>
+                            <th scope="col">Lines passing through</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,16 +30,10 @@
                         if (array_key_exists('submit', $_GET) && connectToDB()) {
 
                             // Query the database
-                            $query = "SELECT e.name, e.salary
-                                FROM employee e, technician t
-                                WHERE e.employeeID = t.employeeID
-                                AND NOT EXISTS
-                                (SELECT b.vehicleID
-                                FROM bus b
-                                MINUS 
-                                (SELECT s.vehicleID
-                                FROM services s
-                                WHERE s.employeeID = t.employeeID))";
+                            $query = "SELECT LHS.stationID, COUNT(DISTINCT LHS.lineName) AS linesPassedThrough
+                                FROM Line_Has_Station LHS
+                                GROUP BY LHS.stationID
+                                HAVING COUNT(DISTINCT LHS.lineName) > 1";
                                 
                             $result = executePlainSQL($query);
 

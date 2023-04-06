@@ -70,7 +70,6 @@
                     <tbody>
                     <?php
                         if (connectToDB()) {
-                            // $selected_line = $_GET['selection'];
 
                             // Query the database
                             $query = "SELECT a.username, a.password, r.registrationdate, r.centreid

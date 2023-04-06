@@ -2,16 +2,15 @@
         <div class="p-4">
             <div class="card">
                 <div class="card-header">
-                    Division Query
+                    Nested Aggregation Query with GROUP BY
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">Experienced technicians</h5>
+                    <h5 class="card-title">Most Popular Pass</h5>
                     <p class="card-text">
-                        Find the name and salary of the technicians who have serviced
-                        all the buses.
+                    This will find the most popular type of pass purchased by users.
                     </p>
-                    <form method="GET" action="q_division.php">
-                        <button type="submit" class="btn btn-primary" name="submit" >Find</button>
+                    <form method="GET" action="q_nestedAggregation.php">
+                        <button type="submit" class="btn btn-primary" name="submit">Find</button>
                     </form>
                 </div>
             </div>
@@ -20,9 +19,8 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Technician Name</th>
-                            <th scope="col">Technician Salary</th>
+                            <th scope="col">Most Popular Pass Type</th>
+                            <th scope="col">Number Sold</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,16 +28,13 @@
                         if (array_key_exists('submit', $_GET) && connectToDB()) {
 
                             // Query the database
-                            $query = "SELECT e.name, e.salary
-                                FROM employee e, technician t
-                                WHERE e.employeeID = t.employeeID
-                                AND NOT EXISTS
-                                (SELECT b.vehicleID
-                                FROM bus b
-                                MINUS 
-                                (SELECT s.vehicleID
-                                FROM services s
-                                WHERE s.employeeID = t.employeeID))";
+                            $query = "SELECT type, COUNT(transactionID)
+                                FROM Pass_Loads_To
+                                GROUP BY type
+                                HAVING COUNT(transactionID) >= all(
+                                    SELECT COUNT(p.transactionID)
+                                    FROM Pass_Loads_To p
+                                    GROUP BY p.type)";
                                 
                             $result = executePlainSQL($query);
 
@@ -47,10 +42,18 @@
                             $count = 0;
                             while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
                                 $count++;
+                                $type = 'Unknown';
+                                switch ($row[0]) {
+                                    case 'M':
+                                        $type = 'Monthly';
+                                        break;
+                                    case 'D':
+                                        $type = 'Daily';
+                                        break;
+                                }
                                 echo "
                                     <tr>
-                                    <th scope='row'> $count </th>
-                                    <td>" . $row[0] . "</td>
+                                    <td>" . $type . "</td>
                                     <td>" . $row[1] . "</td>
                                     </tr>";
                             }

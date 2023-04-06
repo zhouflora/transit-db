@@ -13,7 +13,7 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value=1 id="weekend" name="weekend">
                             <label class="form-check-label" for="weekend">
-                                Avctive on Weekends
+                                Active on Weekends
                             </label>
                         </div>
                         <div class="form-check">
