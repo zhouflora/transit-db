@@ -104,31 +104,22 @@
 
     <hr />
 
-    <h2>Delete Table Values</h2>
-    <form name="delete" method="POST" action="oracle-test.php">
-        <!--refresh page when submitted-->
-        <input type="hidden" id="deleteTupleRequest" name="deleteTupleRequest">
-        Select the tuple you wish to change <br>
-        <select name="deleteFromTuple" id="deleteFromTUple">
-            <option value="" disable selected>Select...</option>;
-            <option value="USERACCOUNT">USERACCOUNT</option>;
-            <option value="CARD">CARD</option>;
-            <option value="PASS">PASS</option>;
-            <!-- <option selected="selected">Select...</option>
-                <?php
-                // $canChange = array("USERACCOUNT", "CARD", "PASS");
-                // foreach($canChange as $tableName) {
-                //     echo "<option value=($tableName)>$tableName</option>";
-                // }
-                ?> 
-                -->
-        </select>
-        <input type="submit" value="See Table Data" name="deleteSubmit"></p>
+    <h2>Delete Tuples</h2>
+        <form name="delete" method="POST" action="fztest.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="deleteTupleRequest" name="deleteTupleRequest">
+            Select the item you wish to delete <br>
+            <select name="deleteFromTuple" id="deleteFromTUple">
+                <option value="" disable selected>Select...</option>;
+                <option value="USERACCOUNT">USERACCOUNT</option>;
+                <option value="CARD">CARD</option>;
+            </select>
+            <input type="submit" value="Confirm" name="deleteSubmit"></p>
 
-        <input type="hidden" id="deleteColumnsRequest" name="deleteColumnsRequest">
-        If you wish to go ahead and delete tuples satisfying the given condition, click to confirm
-        <input type="submit" value="Confirm Delete" name="deleteColumnsSubmit"></p>
-    </form>
+            <input type="hidden" id="deleteColumnsRequest" name="deleteColumnsRequest">
+            Please confirm your information here
+            <input type="text" name="idData"> 
+            <input type="submit" value="Confirm Delete" name="deleteColumnsSubmit"></p>
+        </form> 
 
     <hr />
 
@@ -407,59 +398,45 @@
         }
     }
 
-    function handleColumnsToDelete()
-    {
+    function handleColumnsToDelete() {
         global $db_conn;
 
-        if (!empty($_POST['deleteFromTuple'])) {
-            $tabName = $_POST['deleteFromTuple'];
+            if(!empty($_POST['deleteFromTuple'])) {
+                $tabName = $_POST['deleteFromTuple'];
+                
+                if($tabName == "CARD") {
+                    echo "<br>" . "You have selected to delete your Card from your account. Please confirm your cardID.";
+                } elseif($tabName == "USERACCOUNT") {
+                    echo "<br>" . "You have selected to delete your transit account. Please confirm your username.";
+                }
 
-            $result = executePlainSQL("SELECT column_name from ALL_TAB_COLUMNS WHERE table_name='$tabName'");
-
-            echo "You have chosen " . $tabName . " which includes the following data: " . "<br>";
-            while ($row = oci_fetch_array($result, OCI_BOTH)) {
-                echo "<br>" . $row[0] . "<br>";
-            }
-
-            if ($tabName == "CARD") {
-                echo "<br>" . "Operation available: remove cards that were activated before 2010-01-01,
-                        which was when newly designed cards were rolled out";
             } else {
-                echo "<br>" . "No operation available";
-            }
-
-        } else {
-            echo 'Please select the table you wish to delete from.';
-        }
+                echo "Please select the table you wish to delete from.";
+            }  
     }
 
-    function handleTupleDeletion()
-    {
+    function handleTupleDeletion() {
         global $db_conn;
-
-        if (!empty($_POST['deleteFromTuple'])) {
+        $idData = $_GET['idData'];
+        
+        if(!empty($_POST['deleteFromTuple'])) {
             $tabName = $_POST['deleteFromTuple'];
 
-            $sqlCount = "SELECT count(*) FROM Card_Links_To";
-            $resultCountSQL = executePlainSQL($sqlCount);
+        if($tabName == 'USERACCOUNT') {
+            $sqlRemove = "DELETE FROM UserAccount WHERE username='$idData'";
+            $result = executePlainSQL($sqlRemove);               
+        } elseif ($tabName == 'CARD') {
+            $sqlRemove = "DELETE FROM Card WHERE cardID='$idData'";
+            $result = executePlainSQL($sqlRemove);                
+        }
 
-            if (($resultCount = oci_fetch_row($resultCountSQL)) != false) {
-                echo "Before deletion, there are " . $resultCount[0] . " tuples in the database" . "<br>";
-            }
-
-            $sqlRemove = "DELETE FROM Card_Links_To WHERE activationDate < TO_DATE('2010-01-01', 'YYYY-MM-DD')";
-            $result = executePlainSQL($sqlRemove);
-            OCICommit($db_conn);
-
-            $resultCountSQLAfter = executePlainSQL("SELECT count(*) FROM Card_Links_To");
-
-            if (($resultCountAfter = oci_fetch_row($resultCountSQLAfter, OCI_BOTH)) != false) {
-                echo "<br>" . "Deletion was successful!" . "<br>" . "There are now only " . $resultCountAfter[0] . " tuples in the database" . "<br>";
-            }
+        OCICommit($db_conn);
+        
+        echo "<br>" . "Deletion was successful! We're sorry to see you go.";
         } else {
             echo 'Please select the table you wish to delete from.';
             exit;
-        }
+        }  
     }
 
     // For each transit line, find the number of stations that are part of that line
