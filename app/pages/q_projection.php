@@ -51,7 +51,7 @@
                                         }
                                         
                                         // Get column names
-                                        $query = "SELECT column_name from ALL_TAB_COLUMNS WHERE table_name='$tabName'";
+                                        $query = "SELECT column_name from USER_TAB_COLUMNS WHERE table_name='$tabName'";
                                         $result = executePlainSQL($query);
                                     
                                         // Generate the options

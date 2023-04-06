@@ -203,7 +203,7 @@ CREATE TABLE Card_Used_At_Station
     time      TIMESTAMP,
     isExit    NUMBER(1) DEFAULT 0,
     PRIMARY KEY (cardID, stationID, time),
-    FOREIGN KEY (cardID) REFERENCES Card,
+    FOREIGN KEY (cardID) REFERENCES Card ON DELETE CASCADE,
     FOREIGN KEY (stationID) REFERENCES Station
 );
 
